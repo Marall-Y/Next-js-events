@@ -3,12 +3,13 @@ import Layout from "@/components/Layout"
 import { API_URL } from "@/config/index"
 
 const EventsPage = ({events}) => {
+  
   return (
     <Layout>
       <h1>Upcoming Events</h1>
-      {events.length > 0 ?
-        events.map((evt) => {
-          return <EventItem key={evt.id} event={evt}/>
+      {events.data.length > 0 ?
+        events.data.map((evt) => {
+          return <EventItem key={evt.id} event={evt.attributes}/>
         }) 
         :
         <h3>No events to show</h3>
@@ -18,7 +19,7 @@ const EventsPage = ({events}) => {
 }
 
 export async function getStaticProps() {
-  const res = await fetch(`${API_URL}/api/events`)
+  const res = await fetch(`${API_URL}/api/events?_sort=date:ASC&populate=*`)
   const events = await res.json()
 
   return {
