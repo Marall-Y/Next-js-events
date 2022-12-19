@@ -3,12 +3,44 @@ import { API_URL } from "@/config/index"
 import styles from "@/styles/Event.module.css"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/router"
+import { FaPencilAlt, FaTimes } from "react-icons/fa"
+import { toast } from "react-toastify"
 
 const EventPage = ({event}) => {
-  console.log(event)
+const router = useRouter()
+
+  const deleteEvent = async () => {
+    if(confirm('Are you sure?')) {
+      const res = await fetch(`${API_URL}/api/events/${event.id}`,{
+        method:'DELETE'
+      })
+
+      const data = await res.json()
+
+      if(!res.ok){
+        toast.error(data.message)
+      } else {
+        router.push('/events')
+      }
+    }
+  }
+  
   return (
     <Layout>
       <div className={styles.event}>
+        <div className={styles.controls}>
+          <Link href={`/events/edit/${event.id}`}>
+            <span>
+              <FaPencilAlt /> Edit Event
+            </span>
+          </Link>
+          <Link href='#' onClick={deleteEvent}>
+            <span  className={styles.delete}> 
+              <FaTimes/> Delete Event
+            </span>
+          </Link>
+        </div>
         <span>
           {new Date(event.attributes.date).toLocaleDateString('en-US')}at {event.attributes.time}
         </span>
