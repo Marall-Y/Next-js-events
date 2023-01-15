@@ -1,5 +1,5 @@
 import Layout from '@/components/Layout'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import styles from '@/styles/AuthForm.module.css'
 import { FaUser } from 'react-icons/fa'
 import { toast, ToastContainer } from 'react-toastify'
@@ -14,6 +14,10 @@ const RegisterPage = () => {
     const [password, setPassword] = useState('')
     const [passwordConfirm, setPasswordConfirm] = useState('')
 
+    useEffect(() => {
+      error && toast.error(error)
+    }, [error])
+
     const handleSubmit = (e) => {
         e.preventDefault()
     
@@ -23,7 +27,7 @@ const RegisterPage = () => {
         }
         
         register({username, email, password})
-      }
+    }
 
   return (
     <Layout title='User Registration'>
