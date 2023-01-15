@@ -10,9 +10,10 @@ import moment from "moment"
 import Image from "next/image"
 import { FaImage } from "react-icons/fa"
 import Modal from "@/components/Modal"
+import ImageUpload from "@/components/ImageUpload"
 
 const EditEvent = ({event}) => {
-  
+
   const router = useRouter()
   const [values, setValues] = useState({
     name: event.attributes.name,
@@ -23,7 +24,7 @@ const EditEvent = ({event}) => {
     time: event.attributes.time,
     description: event.attributes.description
   })
-  const [imagePreview, setImagePreview] = useState(event.attributes.image ? event.attributes.image.data.attributes.formats.thumbnail.url : null)
+  const [imagePreview, setImagePreview] = useState(event.attributes.image ? event.attributes.image.data?.attributes.formats.thumbnail.url : null)
   const [showModal, setShowModal] = useState(false)
 
   const handleSubmit = async (e) => {
@@ -51,6 +52,13 @@ const EditEvent = ({event}) => {
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setValues({ ...values, [name]: value })
+  }
+
+  const imageUploaded = async (e) => {
+    const response = await fetch(`${API_URL}/api/events/${event.id}?populate=*`)
+    const eventData = await response.json()
+    setImagePreview(eventData.data.attributes.image.data.attributes.formats.thumbnail.url)
+    setShowModal(false)
   }
 
   return (
@@ -149,13 +157,13 @@ const EditEvent = ({event}) => {
       </button>
     </div>
     <Modal show={showModal} onClose={() => setShowModal(false)}>
-      IMAGE UPLOAD
+      <ImageUpload eventId = {event.id} imageUploaded={imageUploaded}/>
     </Modal>
     </Layout>
   )
 }
 
-export async function getServerSideProps({params: {id}}) {
+export async function getServerSideProps({params: {id}, req}) {
     const response = await fetch(`${API_URL}/api/events/${id}?populate=*`)
     const event = await response.json()
 
